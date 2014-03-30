@@ -1,21 +1,13 @@
 package com.example.takemethere;
 
-import java.io.IOException;
-
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.view.Menu;
-import android.widget.ImageView;
 
 public class MainActivity extends Activity {
 
@@ -23,14 +15,21 @@ public class MainActivity extends Activity {
 	public int angle;
 	private SensorServiceReceiver sensorReceiverDirection;
 	private SensorServiceReceiver sensorReceiverStep;
+	private DatabaseHelper dbHelper = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		startService(new Intent(this, SensorService.class));
-		regsiterBroadCastReceivers();
+		
+		/*startService(new Intent(this, SensorService.class));
+		regsiterBroadCastReceivers();*/
+		
 		//crearPunto(0,0,200,200,Color.RED);
+	}
+	public void init(){
+		dbHelper = new DatabaseHelper(this,null);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+		db.close();
 	}
 	/*private void crearPunto(float x, float y, float xend, float yend, int color) {
 		ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
@@ -52,6 +51,7 @@ public class MainActivity extends Activity {
 	@Override
 	public void onResume(){   
 		super.onResume();
+		init();
 	}
 	/**
 	 * Creates and registers two intent filters - for direction and steps update 
