@@ -10,9 +10,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.ImageView;
 
 public class MainActivity extends Activity {
 
@@ -27,7 +33,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		//Show the input screen to get start location
+		/*//Show the input screen to get start location
 		Location startLocation = getStartLocation();
 		//Once start location is identified, show the screen with list of locations in that floor
 		Location endLocation = getEndLocation();
@@ -36,22 +42,21 @@ public class MainActivity extends Activity {
 		//Get the list of paths associated with the route draw the paths
 		for(Path path : route.paths){
 			drawPath(path);
-		}
+		}*/
 		//TODO: Get initial sensor values and start tracking
 		
 		/*startService(new Intent(this, SensorService.class));
 		regsiterBroadCastReceivers();*/
 	}
 	private void drawPath(Path path) {
-		// TODO Auto-generated method stub
-		
+		drawLine(path.startPoint.x,path.startPoint.y,path.endPoint.x,path.endPoint.y,Color.BLACK);
 	}
 	private Route getRoute(Location startLocation, Location endLocation) {
 		return dbHelper.getRoute(startLocation, endLocation);
 	}
 	private Location getEndLocation() {
 		List<Location> possibleDestinations = dbHelper.getPossibleDestinations(startFloor.id);
-		//TODO: Show destination list to user and when user selects return
+		//TODO: Show destination list to user and when user selects return selected location
 		
 		Location endLocation = null;
 		return endLocation;
@@ -79,18 +84,19 @@ public class MainActivity extends Activity {
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
 		db.close();
 	}
-	/*private void crearPunto(float x, float y, float xend, float yend, int color) {
+	private void drawLine(float startX, float startY, float endX, float endY, int color) {
 		ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
 		//System.out.println(imgMap.getWidth());
+		//TODO: Get size of the bitmap
 	    Bitmap bmp = Bitmap.createBitmap(500, 900, Config.ARGB_8888);
 	    Canvas c = new Canvas(bmp);
 	    imgMap.draw(c);
 
-	    Paint p = new Paint();
-	    p.setColor(color);
-	    c.drawLine(x, y, xend, yend, p);
+	    Paint paint = new Paint();
+	    paint.setColor(color);
+	    c.drawLine(startX, startY, endX, endY, paint);
 	    imgMap.setImageBitmap(bmp);
-	}*/
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
