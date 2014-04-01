@@ -40,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				" (locationId integer primary key autoincrement, name text not null, locationType text," +
 				" locationX integer not null, locationY integer not null, floorId integer not null);" ;
 	private static final String CREATE_ROUTE_TABLE  = " create table " + ROUTE_TABLE + 
-				" (routeId integer primary key autoincrement, floorId integer not null " +
+				" (routeId integer primary key autoincrement, floorId integer not null, " +
 				" startLocationId integer not null, endLocationId integer not null);" ;
 	private static final String CREATE_ROUTE_PATHS_TABLE  = " create table " + ROUTE_PATHS_TABLE + 
 				" (routeId integer not null, pathId integer not null);" ;

@@ -2,12 +2,15 @@ package com.example.takemethere;
 
 import java.util.List;
 
+import com.example.takemethere.Location.LocationType;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -49,6 +52,7 @@ public class MainActivity extends Activity {
 	private Location getEndLocation() {
 		List<Location> possibleDestinations = dbHelper.getPossibleDestinations(startFloor.id);
 		//TODO: Show destination list to user and when user selects return
+		
 		Location endLocation = null;
 		return endLocation;
 	}
@@ -61,7 +65,14 @@ public class MainActivity extends Activity {
 	}
 	private Location getLocationFromQRCode() {
 		// TODO Auto-generated method stub
-		return null;
+		Location l = new Location();
+		l.id=1;
+		l.floorId=5;
+		l.name="Wean Cafe";
+		l.type = LocationType.ENTRY;
+		l.locationPoint = new Point();
+		l.locationPoint.set(10, 10);
+		return l;
 	}
 	public void init(){
 		dbHelper = new DatabaseHelper(this,null);
