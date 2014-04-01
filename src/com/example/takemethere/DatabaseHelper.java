@@ -1,6 +1,8 @@
 
 package com.example.takemethere;
 
+import java.util.List;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -65,6 +67,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + ROUTE_TABLE +";");
 		db.execSQL("DROP TABLE IF EXISTS " + ROUTE_PATHS_TABLE +";");
 		onCreate(db);		
+	}
+
+	public Floor getFloor(int floorId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Location> getPossibleDestinations(int floorId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Route getRoute(int startX, int startY, int endX, int endY) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

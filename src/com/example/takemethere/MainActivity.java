@@ -1,5 +1,7 @@
 package com.example.takemethere;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,16 +17,52 @@ public class MainActivity extends Activity {
 	public int angle;
 	private SensorServiceReceiver sensorReceiverDirection;
 	private SensorServiceReceiver sensorReceiverStep;
-	private DatabaseHelper dbHelper = null;
+	private static DatabaseHelper dbHelper = null;
+	private static Floor startFloor;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		//Show the input screen to get start location
+		Location startLocation = getStartLocation();
+		//Once start location is identified, show the screen with list of locations in that floor
+		Location endLocation = getEndLocation();
+		//Once destination is selected ,we will have start and end points => get the route using that
+		Route route = getRoute(startLocation,endLocation);
+		//Get the list of paths associated with the route draw the paths
+		for(Path path : route.paths){
+			drawPath(path);
+		}
+		//TODO: Get initial sensor values and start tracking
+		
 		/*startService(new Intent(this, SensorService.class));
 		regsiterBroadCastReceivers();*/
+	}
+	private void drawPath(Path path) {
+		// TODO Auto-generated method stub
 		
-		//crearPunto(0,0,200,200,Color.RED);
+	}
+	private Route getRoute(Location startLocation, Location endLocation) {
+		return dbHelper.getRoute(startLocation.locationPoint.x,startLocation.locationPoint.y,
+				endLocation.locationPoint.x, endLocation.locationPoint.y);
+	}
+	private Location getEndLocation() {
+		List<Location> possibleDestinations = dbHelper.getPossibleDestinations(startFloor.id);
+		//TODO: Show destination list to user and when user selects return
+		Location endLocation = null;
+		return endLocation;
+	}
+	private Location getStartLocation() {
+		// TODO Show QR Code screen and get input from the QR Code scanner
+		//QR Code will give the location info.
+		Location startLocation = getLocationFromQRCode();
+		startFloor = dbHelper.getFloor(startLocation.floorId);
+		return startLocation;
+	}
+	private Location getLocationFromQRCode() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	public void init(){
 		dbHelper = new DatabaseHelper(this,null);
