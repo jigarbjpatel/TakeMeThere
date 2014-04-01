@@ -13,11 +13,16 @@ public class Path {
 	public Point endPoint;
 	public int distance;
 	public int floorId;
-	public Path(int id, Point startPoint, Point endPoint, int distance, int floorId){
+	public Path(int id, int floorId, int distance){
 		this.id = id;
-		this.startPoint = startPoint;
-		this.endPoint = endPoint;
 		this.distance = distance;
 		this.floorId = floorId;
+	}
+	public Path(int id, Point startPoint, Point endPoint, int distance, int floorId){
+		this.id = id;
+		this.distance = distance;
+		this.floorId = floorId;
+		this.startPoint = startPoint;
+		this.endPoint = endPoint;
 	}
 }

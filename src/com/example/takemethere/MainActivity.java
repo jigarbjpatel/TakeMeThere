@@ -44,8 +44,7 @@ public class MainActivity extends Activity {
 		
 	}
 	private Route getRoute(Location startLocation, Location endLocation) {
-		return dbHelper.getRoute(startFloor.id, startLocation.locationPoint.x,startLocation.locationPoint.y,
-				endLocation.locationPoint.x, endLocation.locationPoint.y);
+		return dbHelper.getRoute(startLocation, endLocation);
 	}
 	private Location getEndLocation() {
 		List<Location> possibleDestinations = dbHelper.getPossibleDestinations(startFloor.id);
