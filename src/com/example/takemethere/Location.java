@@ -26,4 +26,7 @@ public class Location {
 		this.floorId = floorId;
 		this.type = type;
 	}
+	public Location() {
+		// TODO Auto-generated constructor stub
+	}
 }

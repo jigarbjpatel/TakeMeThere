@@ -9,12 +9,14 @@ import java.util.List;
  */
 public class Route {
 	public int id;
+	public int floorId;
 	public Location startLocation;
 	public Location endLocation;
 	public List<Path> paths;
 	
-	public Route(int id, List<Path> paths, Location startLocation, Location endLocation){
+	public Route(int id, int floorId, List<Path> paths, Location startLocation, Location endLocation){
 		this.id = id;
+		this.floorId = floorId;
 		this.startLocation = startLocation;
 		this.endLocation = endLocation;
 		this.paths = paths;
