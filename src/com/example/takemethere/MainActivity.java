@@ -175,13 +175,14 @@ public class MainActivity extends Activity {
 			//Once destination is selected ,we will have start and end points => get the route using that
 			Route route = getRoute(startLocation,endLocation);
 			//Get the list of paths associated with the route draw the paths
+			
 			ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
 			imgMap.setVisibility(View.VISIBLE);
+			
 			ListView locationsList = (ListView) findViewById(R.id.locationsListview);
 			locationsList.setVisibility(View.GONE);
-			//ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
-			//System.out.println(imgMap.getWidth());
-			//TODO: Get size of the bitmap
+			
+			//TODO: Get proper size of the bitmap
 		    Bitmap bmp = Bitmap.createBitmap(500, 900, Config.ARGB_8888);
 		    Canvas c = new Canvas(bmp);
 		    imgMap.draw(c);
