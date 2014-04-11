@@ -3,14 +3,21 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="horizontal"
-    tools:context=".MainActivity" >
-
+    tools:context=".MainActivity"
+    android:baselineAligned="false" >
+	<ListView 
+	    android:id="@+id/locationsListview"
+	    android:layout_weight="1"
+	    android:layout_width="0dp"
+	    android:layout_height="match_parent"
+    />
     <ImageView
         android:id="@+id/imgMap"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:adjustViewBounds="true"
         android:background="@drawable/weanhallfloor5"
+        android:visibility="gone"
         android:contentDescription="Map" />
 
 </LinearLayout>

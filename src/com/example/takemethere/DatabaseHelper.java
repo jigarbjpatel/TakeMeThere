@@ -30,20 +30,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 */
 	private static final String CREATE_BUILDING_TABLE = 
 			"create table " + BUILDING_TABLE + 
-				" (buildingId integer primary key autoincrement, name text not null, owner text);";
+			" (buildingId integer primary key autoincrement, name text not null, owner text);";
 	private static final String CREATE_FLOOR_TABLE  = " create table " + FLOOR_TABLE + 
-				" (floorId integer primary key autoincrement, name text not null, mapPath text, buildingId integer not null);" ;
+			" (floorId integer primary key autoincrement, name text not null, mapPath text, buildingId integer not null);" ;
 	private static final String CREATE_PATH_TABLE  = " create table " + PATH_TABLE + 
-				" (pathId integer primary key autoincrement, floorId integer not null, distance integer, " +
-				" startX integer not null, endX integer not null, startY integer not null, endY integer not null );" ;
+			" (pathId integer primary key autoincrement, floorId integer not null, distance integer, " +
+			" startX integer not null, endX integer not null, startY integer not null, endY integer not null );" ;
 	private static final String CREATE_LOCATION_TABLE  = " create table " + LOCATION_TABLE + 
-				" (locationId integer primary key autoincrement, name text not null, locationType text," +
-				" locationX integer not null, locationY integer not null, floorId integer not null);" ;
+			" (locationId integer primary key autoincrement, name text not null, locationType text," +
+			" locationX integer not null, locationY integer not null, floorId integer not null);" ;
 	private static final String CREATE_ROUTE_TABLE  = " create table " + ROUTE_TABLE + 
-				" (routeId integer primary key autoincrement, floorId integer not null, " +
-				" startLocationId integer not null, endLocationId integer not null);" ;
+			" (routeId integer primary key autoincrement, floorId integer not null, " +
+			" startLocationId integer not null, endLocationId integer not null);" ;
 	private static final String CREATE_ROUTE_PATHS_TABLE  = " create table " + ROUTE_PATHS_TABLE + 
-				" (routeId integer not null, pathId integer not null);" ;
+			" (routeId integer not null, pathId integer not null);" ;
 
 	public DatabaseHelper(Context context, CursorFactory factory) {
 		super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -71,20 +71,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public Floor getFloor(int floorId) {
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(FLOOR_TABLE, 
-				new String[] { "floorId", "name", "mapPath","buildingId"}, "floorId=?",
-				new String[] { String.valueOf(floorId) }, null, null, null);
 		Floor f = null;
-		if (cursor != null){
-			cursor.moveToFirst();
-			f = new Floor(Integer.parseInt(cursor.getString(0)),
-					cursor.getString(1),
-					Integer.parseInt(cursor.getString(2)),
-					cursor.getString(3));
-			cursor.close();			
+		try{
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = db.query(FLOOR_TABLE, 
+					new String[] { "floorId", "name", "buildingId","mapPath"}, "floorId=?",
+					new String[] { String.valueOf(floorId) }, null, null, null);
+
+			if (cursor != null){
+				cursor.moveToFirst();
+				f = new Floor(cursor.getInt(0),
+						cursor.getString(1),
+						cursor.getInt(2),
+						cursor.getString(3));
+				cursor.close();			
+			}
+			db.close();
+		}catch(Exception e){
+			System.err.println(e);
 		}
-		db.close();
 		return f;
 	}
 
@@ -101,7 +106,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				l.id = cursor.getInt(1);					
 				l.name = cursor.getString(2);
 				l.floorId = cursor.getInt(0);
-				l.type = Enum.valueOf(Location.LocationType.class, cursor.getString(5));
+				try{
+					l.type = Enum.valueOf(Location.LocationType.class, cursor.getString(5));
+				}catch(IllegalArgumentException e){
+					System.err.println(e);
+				}
 				l.locationPoint = new Point();
 				l.locationPoint.set(cursor.getInt(3),cursor.getInt(4));
 				locations.add(l);
@@ -116,7 +125,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(ROUTE_TABLE, 
 				new String[] { "routeId", "startLocationId", "endLocationId"}, 
-								" startLocationId=? AND endLocationId=? ",
+				" startLocationId=? AND endLocationId=? ",
 				new String[] { String.valueOf(startLocation.id),String.valueOf(endLocation.id)}, 
 				null, null, null);
 		Route r = null;
@@ -126,7 +135,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			cursor.close();
 		}
 		db.close();
-		return null;
+		return r;
 	}
 
 	private List<Path> getPaths(int routeId) {
@@ -148,7 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			cursor.close();
 		}
 		db.close();
-		return null;
+		return paths;
 	}
 
 
