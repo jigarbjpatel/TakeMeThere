@@ -54,25 +54,23 @@ public class MainActivity extends Activity {
 		/*startService(new Intent(this, SensorService.class));
 		regsiterBroadCastReceivers();*/
 	}
-	private void drawPath(Path path) {
-		drawLine(path.startPoint.x,path.startPoint.y,path.endPoint.x,path.endPoint.y,Color.BLACK);
+	@Override
+	public void onResume(){   
+		super.onResume();
 	}
-	private Route getRoute(Location startLocation, Location endLocation) {
-		return dbHelper.getRoute(startLocation, endLocation);
+	@Override
+	public void onStop(){
+		super.onStop();
+		System.out.println("Stop");
 	}
-	private Location getEndLocation() {	
-		
-		Location endLocation = new Location();
-		endLocation.floorId = startFloor.id;
-		endLocation.id = 2;
-		endLocation.locationPoint = new Point();
-		endLocation.locationPoint.set(50, 50);
-		endLocation.name = "5303";
-		return endLocation;
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		System.out.println("Destroy");
+		unregisterReceiver(sensorReceiverDirection);
+		unregisterReceiver(sensorReceiverStep);
 	}
-	/**
-	 * 
-	 */
+	
 	private void displayPossibleDestinations() {
 		List<Location> possibleDestinations = dbHelper.getPossibleDestinations(startFloor.id);
 		//TODO: Show destination list to user and when user selects return selected location
@@ -101,11 +99,15 @@ public class MainActivity extends Activity {
 		l.locationPoint.set(300, 227);
 		return l;
 	}
-	public void init(){
-		dbHelper = new DatabaseHelper(this,null);
-		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		db.close();
-	}
+/*	private Location getEndLocation() {	
+		Location endLocation = new Location();
+		endLocation.floorId = startFloor.id;
+		endLocation.id = 2;
+		endLocation.locationPoint = new Point();
+		endLocation.locationPoint.set(50, 50);
+		endLocation.name = "5303";
+		return endLocation;
+	}	
 	private void drawLine(float startX, float startY, float endX, float endY, int color) {
 		ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
 		//System.out.println(imgMap.getWidth());
@@ -118,16 +120,16 @@ public class MainActivity extends Activity {
 	    paint.setColor(color);
 	    c.drawLine(startX, startY, endX, endY, paint);
 	    imgMap.setImageBitmap(bmp);
+	}*/
+	public void init(){
+		dbHelper = new DatabaseHelper(this,null);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+		db.close();
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
-	}
-	@Override
-	public void onResume(){   
-		super.onResume();
-		init();
 	}
 	/**
 	 * Creates and registers two intent filters - for direction and steps update 
@@ -141,18 +143,6 @@ public class MainActivity extends Activity {
         registerReceiver(sensorReceiverStep, stepsFilter);
 	}
 
-	@Override
-	public void onStop(){
-		super.onStop();
-		System.out.println("Stop");
-	}
-	@Override
-	public void onDestroy(){
-		super.onDestroy();
-		System.out.println("Destroy");
-		unregisterReceiver(sensorReceiverDirection);
-		unregisterReceiver(sensorReceiverStep);
-	}
 	public class SensorServiceReceiver extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent)
@@ -173,7 +163,7 @@ public class MainActivity extends Activity {
 			ArrayAdapter<Location> adapter = (ArrayAdapter<Location>) parent.getAdapter();
 			Location endLocation = adapter.getItem(position);
 			//Once destination is selected ,we will have start and end points => get the route using that
-			Route route = getRoute(startLocation,endLocation);
+			Route route = dbHelper.getRoute(startLocation, endLocation);
 			//Get the list of paths associated with the route draw the paths
 			
 			ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
