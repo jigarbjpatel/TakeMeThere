@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
 	private static DBHelper dbHelper = null;
 	private static Floor startFloor;
 	private static Location startLocation;
+	IntentResult scanResult;
 	List<Location> locations;	
 	ArrayAdapter<Location> adapter;
 	@Override
@@ -84,15 +85,15 @@ public class MainActivity extends Activity {
 	private Location getStartLocation() {
 		// TODO Show QR Code screen and get input from the QR Code scanner
 		//QR Code will give the location info.
-		Location startLocation = getLocationFromQRCode();
+		//Location startLocation = getLocationFromQRCode();
 		startFloor = dbHelper.getFloor(startLocation.floorId);
 		return startLocation;
 	}
-	private Location getLocationFromQRCode() {
+	private Location getLocationFromQRCode(int id, int floorId) {
 		// TODO Auto-generated method stub
 		Location l = new Location();
-		l.id=4;
-		l.floorId=1;
+		l.id=id;
+		l.floorId=floorId;
 		l.name="Wean Cafe";
 		l.type = LocationType.ENTRY;
 		l.locationPoint = new Point();
@@ -199,9 +200,15 @@ public class MainActivity extends Activity {
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		  IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+		  scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		  if (scanResult != null) {
 			  System.out.println("Scan successful!");
+			  //String result = scanResult.toString();
+			  //String [] start = result.split(" ");
+			  //Location startLocation = getLocationFromQRCode(Integer.parseInt(start[1]), Integer.parseInt(start[2]));
+			  Location startLocation = getLocationFromQRCode(1,1);
+			  startFloor = dbHelper.getFloor(startLocation.floorId);
+			  displayPossibleDestinations();
 		  }
 		  else 
 			  System.out.println("Error");
