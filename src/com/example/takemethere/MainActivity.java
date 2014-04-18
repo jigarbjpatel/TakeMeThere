@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-//		init();
+		init();
 //		//Show the input screen to get start location
 //		startLocation = getStartLocation();
 //		//Once start location is identified, show the screen with list of locations in that floor
