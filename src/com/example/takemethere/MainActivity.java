@@ -18,6 +18,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -41,12 +42,12 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		init();
-		//Show the input screen to get start location
-		startLocation = getStartLocation();
-		//Once start location is identified, show the screen with list of locations in that floor
-		displayPossibleDestinations();
-		//Location endLocation = getEndLocation();
+//		init();
+//		//Show the input screen to get start location
+//		startLocation = getStartLocation();
+//		//Once start location is identified, show the screen with list of locations in that floor
+//		displayPossibleDestinations();
+//		//Location endLocation = getEndLocation();
 		
 		//TODO: Get initial sensor values and start tracking
 		
@@ -172,7 +173,7 @@ public class MainActivity extends Activity {
 			locationsList.setVisibility(View.GONE);
 			
 			//TODO: Get proper size of the bitmap
-		    Bitmap bmp = Bitmap.createBitmap(620, 320, Config.ARGB_8888);
+		    Bitmap bmp = Bitmap.createBitmap(320, 620, Config.ARGB_8888);
 		    Canvas c = new Canvas(bmp);
 		    imgMap.draw(c);
 		    Paint paint = new Paint();
@@ -185,4 +186,25 @@ public class MainActivity extends Activity {
 			imgMap.setImageBitmap(bmp);
 		}	
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+		//if(item.getTitle()=="Scan"){
+			IntentIntegrator integrator = new IntentIntegrator(this);
+			integrator.initiateScan();
+		//}
+		return true;
+		
+	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		  IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+		  if (scanResult != null) {
+			  System.out.println("Scan successful!");
+		  }
+		  else 
+			  System.out.println("Error");
+			  
+		}
 }
