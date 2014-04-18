@@ -19,7 +19,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -32,7 +31,7 @@ public class MainActivity extends Activity {
 	public int angle;
 	private SensorServiceReceiver sensorReceiverDirection;
 	private SensorServiceReceiver sensorReceiverStep;
-	private static DatabaseHelper dbHelper = null;
+	private static DBHelper dbHelper = null;
 	private static Floor startFloor;
 	private static Location startLocation;
 	List<Location> locations;	
@@ -67,8 +66,8 @@ public class MainActivity extends Activity {
 	public void onDestroy(){
 		super.onDestroy();
 		System.out.println("Destroy");
-		unregisterReceiver(sensorReceiverDirection);
-		unregisterReceiver(sensorReceiverStep);
+		//unregisterReceiver(sensorReceiverDirection);
+		//unregisterReceiver(sensorReceiverStep);
 	}
 	
 	private void displayPossibleDestinations() {
@@ -122,7 +121,7 @@ public class MainActivity extends Activity {
 	    imgMap.setImageBitmap(bmp);
 	}*/
 	public void init(){
-		dbHelper = new DatabaseHelper(this,null);
+		dbHelper = new DBHelper(this);
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
 		db.close();
 	}
@@ -173,7 +172,7 @@ public class MainActivity extends Activity {
 			locationsList.setVisibility(View.GONE);
 			
 			//TODO: Get proper size of the bitmap
-		    Bitmap bmp = Bitmap.createBitmap(500, 900, Config.ARGB_8888);
+		    Bitmap bmp = Bitmap.createBitmap(620, 320, Config.ARGB_8888);
 		    Canvas c = new Canvas(bmp);
 		    imgMap.draw(c);
 		    Paint paint = new Paint();
