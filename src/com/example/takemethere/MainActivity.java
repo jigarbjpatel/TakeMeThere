@@ -202,6 +202,9 @@ public class MainActivity extends Activity {
 		  IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		  if (scanResult != null) {
 			  System.out.println("Scan successful!");
+			  //TODO: create startLocation object from result 
+			  startFloor = dbHelper.getFloor(startLocation.floorId);
+			  this.displayPossibleDestinations();
 		  }
 		  else 
 			  System.out.println("Error");
