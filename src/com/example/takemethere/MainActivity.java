@@ -37,6 +37,10 @@ public class MainActivity extends Activity {
 	private static Location startLocation;
 	List<Location> locations;	
 	ArrayAdapter<Location> adapter;
+	Route route;
+	int currPathIndex = 0;
+	int remainingSteps = 0;
+	public int avgStepLength = 1;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -151,8 +155,21 @@ public class MainActivity extends Activity {
 				stepCounter = intent.getIntExtra(SensorService.STEPS, 0);
 			else if(intent.getAction().equals(SensorService.DIRECTION_UPDATE))
 				angle = intent.getIntExtra(SensorService.ANGLE,0);
-			System.out.println(stepCounter + " " + angle);	
-			//updateGUI();			
+			//System.out.println(stepCounter + " " + angle);	
+			updateGUI();			
+		}
+
+		private void updateGUI() {
+			remainingSteps--;
+			if(remainingSteps <= 0){
+				currPathIndex++;
+				if(route.paths.size() == currPathIndex){
+					//TODO: Route Ended => Stop Tracking
+				}else{
+					//TODO: Change path => update UI
+					
+				}
+			}
 		}
 	}
 	
@@ -163,7 +180,7 @@ public class MainActivity extends Activity {
 			ArrayAdapter<Location> adapter = (ArrayAdapter<Location>) parent.getAdapter();
 			Location endLocation = adapter.getItem(position);
 			//Once destination is selected ,we will have start and end points => get the route using that
-			Route route = dbHelper.getRoute(startLocation, endLocation);
+			route = dbHelper.getRoute(startLocation, endLocation);
 			//Get the list of paths associated with the route draw the paths
 			
 			ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
@@ -172,8 +189,7 @@ public class MainActivity extends Activity {
 			ListView locationsList = (ListView) findViewById(R.id.locationsListview);
 			locationsList.setVisibility(View.GONE);
 			
-			//TODO: Get proper size of the bitmap
-		    Bitmap bmp = Bitmap.createBitmap(320, 620, Config.ARGB_8888);
+			Bitmap bmp = Bitmap.createBitmap(320, 620, Config.ARGB_8888);
 		    Canvas c = new Canvas(bmp);
 		    imgMap.draw(c);
 		    Paint paint = new Paint();
@@ -184,6 +200,10 @@ public class MainActivity extends Activity {
 				c.drawLine(path.startPoint.x, path.startPoint.y,path.endPoint.x,path.endPoint.y, paint);
 			}
 			imgMap.setImageBitmap(bmp);
+			//TODO: Start Tracking
+			
+			remainingSteps = route.paths.get(currPathIndex).distance / avgStepLength;
+			
 		}	
 	}
 	
