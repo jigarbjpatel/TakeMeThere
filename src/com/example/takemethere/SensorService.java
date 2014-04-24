@@ -99,9 +99,9 @@ public class SensorService extends Service implements SensorEventListener{
 				mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
 				SensorManager.SENSOR_DELAY_FASTEST);
 
-/*		mSensorManager.registerListener(this, 
+		mSensorManager.registerListener(this, 
 				mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR),
-				SensorManager.SENSOR_DELAY_NORMAL);*/
+				SensorManager.SENSOR_DELAY_NORMAL);
 	}
 
 	@Override
@@ -136,12 +136,12 @@ public class SensorService extends Service implements SensorEventListener{
 			// copy new magnetometer data into magnet array
 			System.arraycopy(event.values, 0, magnet, 0, 3);
 			break;
-		/*case Sensor.TYPE_STEP_DETECTOR:
+		case Sensor.TYPE_STEP_DETECTOR:
 			if (event.values[0] == 1.0f) {
 				mStep++;
 				announceChanges(STEP_UPDATE);
 			}
-			break;*/
+			break;
 		}
 	}
 	// calculates orientation angles from accelerometer and magnetometer output
