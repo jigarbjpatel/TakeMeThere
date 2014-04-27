@@ -12,7 +12,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 public class DBHelper extends SQLiteAssetHelper {
 	private static final String DATABASE_NAME = "TakeMeThere.db";
-	private static final int DATABASE_VERSION = 5;
+	private static final int DATABASE_VERSION = 7;
 	private static final String BUILDING_TABLE = "buildings";
 	private static final String FLOOR_TABLE = "floors";
 	private static final String LOCATION_TABLE = "locations";

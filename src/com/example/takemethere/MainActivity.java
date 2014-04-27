@@ -2,6 +2,8 @@ package com.example.takemethere;
 
 import java.util.List;
 
+import com.example.takemethere.Location.LocationType;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +15,9 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,10 +43,11 @@ public class MainActivity extends Activity {
 	Route route;
 	int currPathIndex = 0;
 	int remainingSteps = 0;
-	public int avgStepLength = 1;
-	Bitmap bmp = Bitmap.createBitmap(320, 620, Config.ARGB_8888);
+	public int avgStepLength = 5;
+	Bitmap bmp = Bitmap.createBitmap(620, 320, Config.ARGB_8888);
 	Canvas c ;
 	ImageView imgMap ;
+	private boolean serviceNotRunning = true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,10 +68,23 @@ public class MainActivity extends Activity {
 	public void onDestroy(){
 		super.onDestroy();
 		System.out.println("Destroy");
-		//unregisterReceiver(sensorReceiverDirection);
-		//unregisterReceiver(sensorReceiverStep);
-	}
+		try{
+			unregisterReceiver(sensorReceiverDirection);
+			unregisterReceiver(sensorReceiverStep);
+			serviceNotRunning = true;
+		}catch(Exception ex){
 
+		}
+	}
+	private void startService(){
+		if(serviceNotRunning ){
+			startService(new Intent(MainActivity.this, SensorService.class));
+			regsiterBroadCastReceivers();
+			serviceNotRunning = false;
+		}
+
+
+	}
 	private void displayPossibleDestinations() {
 		List<Location> possibleDestinations = dbHelper.getPossibleDestinations(startFloor.id);
 		//TODO: Show destination list to user and when user selects return selected location
@@ -77,19 +95,16 @@ public class MainActivity extends Activity {
 		MainActivity.LocationClickListener clickListener = new MainActivity.LocationClickListener();
 		locationsListView.setOnItemClickListener(clickListener);
 	}
-	/*private Location getStartLocation() {
+	private Location getStartLocation() {
 		// TODO Show QR Code screen and get input from the QR Code scanner
 		//QR Code will give the location info.
 		//Location startLocation = getLocationFromQRCode();
 		startFloor = dbHelper.getFloor(startLocation.floorId);
 		return startLocation;
-<<<<<<< HEAD
+
 	}
 	private Location getLocationFromQRCode(int id, int floorId) {
-=======
-	}*/
-	/*private Location getLocationFromQRCode() {
->>>>>>> FETCH_HEAD
+
 		// TODO Auto-generated method stub
 		Location l = new Location();
 		l.id=id;
@@ -99,29 +114,9 @@ public class MainActivity extends Activity {
 		l.locationPoint = new Point();
 		l.locationPoint.set(300, 227);
 		return l;
-	}*/
-	/*	private Location getEndLocation() {	
-		Location endLocation = new Location();
-		endLocation.floorId = startFloor.id;
-		endLocation.id = 2;
-		endLocation.locationPoint = new Point();
-		endLocation.locationPoint.set(50, 50);
-		endLocation.name = "5303";
-		return endLocation;
-	}	
-	private void drawLine(float startX, float startY, float endX, float endY, int color) {
-		ImageView imgMap = (ImageView) findViewById(R.id.imgMap);
-		//System.out.println(imgMap.getWidth());
-		//TODO: Get size of the bitmap
-	    Bitmap bmp = Bitmap.createBitmap(500, 900, Config.ARGB_8888);
-	    Canvas c = new Canvas(bmp);
-	    imgMap.draw(c);
+	}
 
-	    Paint paint = new Paint();
-	    paint.setColor(color);
-	    c.drawLine(startX, startY, endX, endY, paint);
-	    imgMap.setImageBitmap(bmp);
-	}*/
+
 	public void init(){
 		dbHelper = new DBHelper(this);
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -152,7 +147,7 @@ public class MainActivity extends Activity {
 				stepCounter = intent.getIntExtra(SensorService.STEPS, 0);
 			else if(intent.getAction().equals(SensorService.DIRECTION_UPDATE))
 				angle = intent.getIntExtra(SensorService.ANGLE,0);
-			//System.out.println(stepCounter + " " + angle);	
+			System.out.println(stepCounter + " " + angle);	
 			updateGUI();			
 		}
 
@@ -160,17 +155,36 @@ public class MainActivity extends Activity {
 			if(stepCounter >= remainingSteps){
 				stepCounter = 0;
 				currPathIndex++;
+				//Toast.makeText(getApplicationContext(), String.valueOf(currPathIndex), Toast.LENGTH_SHORT);
 				if(route.paths.size() == currPathIndex){
-					//TODO: Route Ended => Stop Tracking
-					Toast.makeText(getApplicationContext(), "Hurray you have reached destination!", Toast.LENGTH_SHORT).show();
-				}else{
-					//TODO: Change path => update UI
 					Paint paint = new Paint();
 					paint.setColor(Color.GREEN);
 					paint.setStrokeWidth(5);
-					Path path = route.paths.get(currPathIndex);
+					Path path = route.paths.get(currPathIndex-1);
 					c.drawLine(path.startPoint.x, path.startPoint.y,path.endPoint.x,path.endPoint.y, paint);
-					imgMap.setImageBitmap(bmp);		
+					imgMap.setImageBitmap(bmp);
+					//Route Ended => Stop Tracking
+					Toast.makeText(getApplicationContext(), "Hurray you have reached destination!", Toast.LENGTH_SHORT).show();
+					//bmp = Bitmap.createBitmap(620, 320, Config.ARGB_8888);
+					//c = new Canvas(bmp);
+					//imgMap.draw(c);
+					currPathIndex = 0;
+					remainingSteps = 0;
+				}else{
+					try{
+						remainingSteps = route.paths.get(currPathIndex).distance / avgStepLength;
+						//Change path => update UI
+						Paint paint = new Paint();
+						paint.setColor(Color.GREEN);
+						paint.setStrokeWidth(5);
+						Path path = route.paths.get(currPathIndex-1);
+						c.drawLine(path.startPoint.x, path.startPoint.y,path.endPoint.x,path.endPoint.y, paint);
+						imgMap.setImageBitmap(bmp);	
+						//imgMap.requestLayout();
+						//imgMap.invalidate();
+					}catch(Exception ex){
+						Log.e("Sensor", ex.toString());
+					}
 				}
 			}
 		}
@@ -202,9 +216,9 @@ public class MainActivity extends Activity {
 			}
 			imgMap.setImageBitmap(bmp);
 			//Start Tracking
-			startService(new Intent(MainActivity.this, SensorService.class));
-			regsiterBroadCastReceivers();
+			currPathIndex = 0;
 			remainingSteps = route.paths.get(currPathIndex).distance / avgStepLength;
+			startService();
 		}	
 	}
 	@Override
@@ -219,31 +233,20 @@ public class MainActivity extends Activity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-<<<<<<< HEAD
-		  scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-		  if (scanResult != null) {
-			  System.out.println("Scan successful!");
-			  //String result = scanResult.toString();
-			  //String [] start = result.split(" ");
-			  //Location startLocation = getLocationFromQRCode(Integer.parseInt(start[1]), Integer.parseInt(start[2]));
-			  Location startLocation = getLocationFromQRCode(1,1);
-			  startFloor = dbHelper.getFloor(startLocation.floorId);
-			  displayPossibleDestinations();
-		  }
-		  else 
-			  System.out.println("Error");
-			  
-=======
-		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+		scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (scanResult != null) {
-			System.out.println("Scan successful!");
-			//TODO: create startLocation object from result 
+			//System.out.println("Scan successful!");
+			//String result = scanResult.toString();
+			//String [] start = result.split(" ");
+			//Location startLocation = getLocationFromQRCode(Integer.parseInt(start[1]), Integer.parseInt(start[2]));
+			startLocation = getLocationFromQRCode(4,1);
 			startFloor = dbHelper.getFloor(startLocation.floorId);
 			displayPossibleDestinations();
->>>>>>> FETCH_HEAD
 		}
 		else 
-			System.out.println("Error");
+			System.out.println("Error in scanning");
+
 
 	}
+
 }
